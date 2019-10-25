@@ -122,7 +122,6 @@ class TrendReq(object):
                           connect=self.retries,
                           backoff_factor=self.backoff_factor)
 
-        print("UA: {}".self.useragent)
         s.headers.update({'accept-language': self.hl})
         s.headers.update({'user-agent' : self.useragent})
         if len(self.proxies) > 0:
