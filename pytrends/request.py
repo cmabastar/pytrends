@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import requests
+from fake_useragent import UserAgent
+
+
+
 
 
 
@@ -55,6 +59,8 @@ class TrendReq(object):
         self.retries = retries
         self.backoff_factor = backoff_factor
         self.proxy_index = 0
+        self.ua = UserAgent()
+        self.useragent = self.ua.random
         self.cookies = self.GetGoogleCookie()
         # intialize widget payloads
         self.token_payload = dict()
@@ -62,6 +68,8 @@ class TrendReq(object):
         self.interest_by_region_widget = dict()
         self.related_topics_widget_list = list()
         self.related_queries_widget_list = list()
+
+
 
     def GetGoogleCookie(self):
         """
@@ -78,7 +86,8 @@ class TrendReq(object):
                     'https://trends.google.com/?geo={geo}'.format(
                         geo=self.hl[-2:]),
                     timeout=self.timeout,
-                    proxies=proxy
+                    proxies=proxy,
+                    headers={'user-agent' : self.useragent},
                 ).cookies.items()))
             except requests.exceptions.ProxyError:
                 print('Proxy error. Changing IP')
@@ -114,6 +123,7 @@ class TrendReq(object):
                           backoff_factor=self.backoff_factor)
 
         s.headers.update({'accept-language': self.hl})
+        s.headers.update({'user-agent' : self.useragent})
         if len(self.proxies) > 0:
             self.cookies = self.GetGoogleCookie()
             s.proxies.update({'https': self.proxies[self.proxy_index]})
